@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Implementation-Title: template
 Implementation-Version: 0.0.1-SNAPSHOT
-Built-By: LiDes
+Built-By: Administrator
 Implementation-Vendor-Id: top.lides.template
-Build-Jdk: 1.8.0_112
+Build-Jdk: 1.8.0_151
 Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
  ot-starter-parent/template
 Created-By: Maven Integration for Eclipse
