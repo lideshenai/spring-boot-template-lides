@@ -25,7 +25,7 @@ public class MybatisConfigurer {
         SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
         factory.setDataSource(dataSource);
         factory.setTypeAliasesPackage(MODEL_PACKAGE);
-
+/*
         //配置分页插件，详情请查阅官方文档
         PageHelper pageHelper = new PageHelper();
         Properties properties = new Properties();
@@ -35,7 +35,7 @@ public class MybatisConfigurer {
         pageHelper.setProperties(properties);
 
         //添加插件
-        factory.setPlugins(new Interceptor[]{pageHelper});
+        factory.setPlugins(new Interceptor[]{pageHelper});*/
 
         //添加XML目录
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
