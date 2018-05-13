@@ -38,7 +38,8 @@ public class CodeGenerator {
 
     public static void main(String[] args) {
         //genCode("输入表名");
-        genCodeByCustomModelName("user","User");
+        genCodeByCustomModelName("sys_role","Role");
+        genCodeByCustomModelName("sys_permission","Permission");
     }
 
     /**

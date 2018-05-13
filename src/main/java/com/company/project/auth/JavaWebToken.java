@@ -39,10 +39,10 @@ public class JavaWebToken {
 	  private static final String SECRET = "companiontek";
 	  //过期时间
 	 @Value("${token.expire.seconds}")
-	  private static Integer expirationTime;
+	  private  Integer expirationTime;
 	  
 	//该方法使用HS256算法和Secret:bankgl生成signKey
-    private static Key getKeyInstance() {
+    private  Key getKeyInstance() {
         //We will sign our JavaWebToken with our ApiKey secret
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
         byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(SECRET);
@@ -51,8 +51,9 @@ public class JavaWebToken {
     }
 
    
-    public static String createJavaWebToken(String username) {
-    	Long time = expirationTime*60*1000L;
+    public  String createJavaWebToken(String username) {
+    	System.out.println("createJavaWebToken:"+expirationTime);
+    	Long time = expirationTime*1000L;
     	Date date = new Date(time+new Date().getTime());
     	//生成登录令牌
     	return Jwts.builder()    	
@@ -67,15 +68,14 @@ public class JavaWebToken {
     }
 
     //解析Token，同时也能验证Token，当验证失败返回null.claims自定义需要加的内容
-    public static Claims parserJavaWebToken(String jwt) {    	
+    public  Claims parserJavaWebToken(String jwt) {    	
         try {
         	  final Claims claims = Jwts.parser().setSigningKey(SECRET)
                       .parseClaimsJws(jwt).getBody();
         	  return claims;
         } catch (Exception e) {
             log.error("json web token verify failed");
-            e.printStackTrace();
-            return null;
+           throw e;
         }
     }
     

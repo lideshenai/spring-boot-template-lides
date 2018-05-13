@@ -2,6 +2,7 @@ package com.company.project.configurer;
 
 import java.io.IOException;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,7 +38,8 @@ import com.company.project.utils.UserUtil;
 public class SecurityHandlerConfig {
 	
 	private static final Logger log = LoggerFactory.getLogger(SecurityHandlerConfig.class);
-
+	@Resource
+	JavaWebToken javaWebToken;
 	/**
 	 * 登陆成功，返回Token
 	 * 
@@ -51,7 +53,7 @@ public class SecurityHandlerConfig {
 			public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 					Authentication authentication) throws IOException, ServletException {
 				LoginUser user = UserUtil.getLoginUser();
-				String token = JavaWebToken.createJavaWebToken(user.getUsername());
+				String token = javaWebToken.createJavaWebToken(user.getUsername());
 				Result result = new Result();
 				result.setCode(ResultCode.SUCCESS);
 				result.setData(token);
@@ -67,6 +69,7 @@ public class SecurityHandlerConfig {
 	 */
 	@Bean
 	public AuthenticationFailureHandler loginFailureHandler() {
+		System.out.println("登录失败");
 		return new AuthenticationFailureHandler() {
 			
 			@Override
@@ -75,7 +78,9 @@ public class SecurityHandlerConfig {
 				  log.warn("签名认证失败，请求接口：{}，请求IP：{}，请求参数：{}",
                           request.getRequestURI(), getIpAddress(request), JSON.toJSONString(request.getParameterMap()));
 				Result result = new Result();
-                result.setCode(ResultCode.UNAUTHORIZED).setMessage("签名认证失败");
+				String msg = exception.getMessage();
+				if("Bad credentials".equals(msg))msg="密码错误";
+                result.setCode(ResultCode.UNAUTHORIZED).setMessage(msg);
 				ResponseUtil.responseResult(response, result);
 				
 			}
@@ -113,7 +118,7 @@ public class SecurityHandlerConfig {
 	 */
 	@Bean
 	public AuthenticationEntryPoint authenticationEntryPoint() {
-		
+		System.out.println("未登录");
 		return new AuthenticationEntryPoint() {
 			
 			@Override
@@ -121,7 +126,8 @@ public class SecurityHandlerConfig {
 					AuthenticationException exception) throws IOException, ServletException {
 			
 				Result result = new Result();
-                result.setCode(ResultCode.UNAUTHORIZED).setMessage("未登录");
+				 result.setCode(ResultCode.UNAUTHORIZED).setMessage(exception.getMessage());
+               // result.setCode(ResultCode.UNAUTHORIZED).setMessage("未登录");
 				ResponseUtil.responseResult(response, result);
 				
 			}

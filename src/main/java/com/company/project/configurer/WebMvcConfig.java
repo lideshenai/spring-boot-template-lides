@@ -15,9 +15,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -32,7 +32,6 @@ import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.company.project.core.Result;
 import com.company.project.core.ResultCode;
 import com.company.project.core.ServiceException;
-import com.company.project.page.table.PageTableArgumentResolver;
 
 
 
@@ -69,14 +68,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
         converter.setDefaultCharset(Charset.forName("UTF-8"));
         converters.add(converter);
     }
-  //统一异常处理
-    @Override
+ //统一异常处理
+ @Override
       public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {   	
       	exceptionResolvers.add(new HandlerExceptionResolver() {
               public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception e) {
                   Result result = new Result();
-                  if (e instanceof ServiceException) {//业务失败的异常，如“账号或密码错误”
-                      result.setCode(ResultCode.FAIL).setMessage(e.getMessage());
+                  if (e instanceof AccessDeniedException) {//业务失败的异常，如“账号或密码错误”
+                      result.setCode(ResultCode.FAIL).setMessage("权限不足");
                       log.info(e.getMessage());
                   } else if (e instanceof NoHandlerFoundException) {
                       result.setCode(ResultCode.NOT_FOUND).setMessage("接口 [" + request.getRequestURI() + "] 不存在");
@@ -114,20 +113,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         }
     }
 
-	/**
-	 * datatable分页解析
-	 * 
-	 * @return
-	 */
-	@Bean
-	public PageTableArgumentResolver tableHandlerMethodArgumentResolver() {
-		return new PageTableArgumentResolver();
-	}
 
-	@Override
-	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-		argumentResolvers.add(tableHandlerMethodArgumentResolver());
-	}
 
 	/**
 	 * 上传文件根路径

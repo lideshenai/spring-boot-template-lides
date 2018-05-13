@@ -1,7 +1,11 @@
 package com.company.project.configurer;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean;
+import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,7 +16,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+
+import com.company.project.auth.TokenFilter;
 
 /**
  * spring security配置
@@ -35,12 +42,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private AuthenticationEntryPoint authenticationEntryPoint;
 	@Autowired
 	private UserDetailsService userDetailsService;
-
-
+	@Resource
+	private  TokenFilter tokenFilter;
 	@Bean
 	public BCryptPasswordEncoder bCryptPasswordEncoder() {
+		
 		return new BCryptPasswordEncoder();
 	}
+	
+
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -67,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.headers().frameOptions().disable();
 		http.headers().cacheControl();
 
-		//http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 	/**
 	 * 登录认证
